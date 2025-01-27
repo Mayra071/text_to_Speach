@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text to Speech Converter</title>
+    <style>
+        /* General styles */
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg,rgb(162, 223, 137), #764ba2);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: #fff;
+        }
+
+        /* Main container */
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 40px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            width: 90%;
+            max-width: 500px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            color:rgb(29, 24, 6);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+        }
+
+        /* Form styling */
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            resize: none;
+            outline: none;
+            background: rgba(255, 255, 255, 0.2);
+            color: #fff;
+            transition: all 0.3s ease;
+        }
+
+        textarea::placeholder {
+            color: #ddd;
+        }
+
+        textarea:focus {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        /* Select dropdown */
+        select {
+            padding: 10px;
+            font-size: 1rem;
+            border-radius: 10px;
+            border: none;
+            background: rgba(255, 255, 255, 0.2);
+            color: #fff;
+            outline: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        select:hover {
+            background: rgba(44, 7, 7, 0.3);
+        }
+
+        /* Buttons */
+        button {
+            background:rgb(141, 131, 91);
+            border: none;
+            padding: 15px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border-radius: 10px;
+            cursor: pointer;
+            color: #333;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+        }
+
+        button:hover {
+            background: #ffbc00;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 221, 87, 0.5);
+        }
+
+        label {
+            font-size: 1rem;
+            text-align: left;
+            font-weight: bold;
+            color: #ffdd57;
+        }
+
+        /* Result section */
+        #result {
+            margin-top: 20px;
+        }
+
+        audio {
+            width: 100%;
+            border-radius: 10px;
+            outline: none;
+        }
+
+        /* Responsive styling */
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            button {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Text to Speech</h1>
+        <form id="tts-form" method="POST" action="{% url 'text_to_speech' %}" onsubmit="return playAudio();">
+            {% csrf_token %}
+            <textarea name="text" rows="4" placeholder="Enter text here..."></textarea>
+            
+            <label for="voice">Select Voice:</label>
+            <select id="voice" name="voice">
+                <option value="Joanna">Joanna</option>
+                <option value="Matthew">Matthew</option>
+                <option value="Ivy">Ivy</option>
+                <option value="Justin">Justin</option>
+                <option value="Kendra">Kendra</option>
+            </select>
+            
+            <button type="submit">Convert to Speech</button>
+            <button type="button" onclick="restartAudio()">Restart</button>
+        </form>
+
+        <div id="result">
+            {% if audio_file %}
+                <h2 style="color:rgb(145, 175, 172);">Audio Generated:</h2>
+                <audio id="audioPlayer" controls>
+                    <source src="{{ audio_file }}" type="audio/mpeg">
+                    Your browser does not support the audio element.
+                </audio>
+            {% endif %}
+        </div>
+    </div>
+
+    <script>
+        function restartAudio() {
+            var audio = document.getElementById('audioPlayer');
+            if (audio) {
+                audio.currentTime = 0;
+                audio.play();
+            }
+        }
+    </script>
+</body>
+</html>
